@@ -110,7 +110,7 @@ pub(crate) fn montgomery_reduction_boxed(
 // barrett reduction
   #[inline]
   #[allow(clippy::too_many_arguments)]
-  fn barrett_reduce(lo: U256, hi: U256, mu:[u64;5], modulus: [u64; 4]) -> U256 {
+  pub fn barrett_reduce(lo: U256, hi: U256, mu:[u64;5], modulus: [u64; 4]) -> U256 {
       let lo = lo.as_words();
       let hi = hi.as_words();
       let a0 = lo[0];
