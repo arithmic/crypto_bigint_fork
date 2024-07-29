@@ -18,7 +18,7 @@
 
 mod const_monty_form;
 mod monty_form;
-mod reduction;
+pub mod reduction;
 
 mod add;
 pub(crate) mod bernstein_yang;
