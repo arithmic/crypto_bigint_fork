@@ -3,7 +3,7 @@
 //! By default these are all constant-time and use the `subtle` crate.
 
 use super::Uint;
-use crate::{ConstChoice, Limb};
+use crate::{ConstChoice, Limb, Word};
 use core::cmp::Ordering;
 use subtle::{Choice, ConstantTimeEq, ConstantTimeGreater, ConstantTimeLess};
 
@@ -110,6 +110,25 @@ impl<const LIMBS: usize> Uint<LIMBS> {
             i -= 1;
         }
     }
+
+    /// Get the value of the bit at position `index`, as a 0- or 1-valued Word.
+    /// Returns 0 for indices out of range.
+    pub const fn bit_as_word(self, index: usize) -> Word {
+        let limb_num = Limb((index / Limb::BITS as usize) as Word);
+        let index_in_limb = index % (Limb::BITS as usize);
+        let index_mask = 1 << index_in_limb;
+        let limbs = self.as_words();
+        let mut result: Word = 0;
+        let mut i = 0;
+        while i < LIMBS {
+            let bit = limbs[i] & index_mask;
+            let is_right_limb = Limb::ct_eq(limb_num, Limb(i as Word));
+            result |= bit & is_right_limb;
+            i += 1;
+        }
+        result >> index_in_limb
+    }
+
 }
 
 impl<const LIMBS: usize> ConstantTimeEq for Uint<LIMBS> {

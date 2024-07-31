@@ -6,6 +6,8 @@ use subtle::{
     Choice, ConditionallySelectable, ConstantTimeEq, ConstantTimeGreater, ConstantTimeLess,
 };
 
+use super::Word;
+
 impl Limb {
     /// Is this limb an odd number?
     #[inline]
@@ -36,6 +38,20 @@ impl Limb {
     #[inline]
     pub(crate) const fn is_nonzero(&self) -> ConstChoice {
         ConstChoice::from_word_nonzero(self.0)
+    }
+    /// Returns `Word::MAX` if `lhs == rhs` and `0` otherwise.
+    #[inline]
+    pub(crate) const fn ct_eq(lhs: Self, rhs: Self) -> Word {
+        let x = lhs.0;
+        let y = rhs.0;
+        // c == 0 if and only if x == y
+        let c = x ^ y;
+        // If c == 0, then c and -c are both equal to zero;
+        // otherwise, one or both will have its high bit set.
+        let d = (c | c.wrapping_neg()) >> (Limb::BITS - 1);
+        // Result is the opposite of the high bit (now shifted to low).
+        // Convert 1 to Word::MAX.
+        (d ^ 1).wrapping_neg()
     }
 }
 
