@@ -75,7 +75,7 @@ use zeroize::DefaultIsZeroes;
 #[derive(Copy, Clone, Hash)]
 pub struct Uint<const LIMBS: usize> {
     /// Inner limb array. Stored from least significant to most significant.
-    pub(crate) limbs: [Limb; LIMBS],
+    pub limbs: [Limb; LIMBS],
 }
 
 impl<const LIMBS: usize> Uint<LIMBS> {
