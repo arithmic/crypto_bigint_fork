@@ -29,7 +29,7 @@ impl Limb {
     }
 
     /// Compute "wide" multiplication, with a product twice the size of the input.
-    pub(crate) const fn mul_wide(&self, rhs: Self) -> (Self, Self) {
+    pub const fn mul_wide(&self, rhs: Self) -> (Self, Self) {
         let (lo, hi) = mul_wide(self.0, rhs.0);
         (Limb(lo), Limb(hi))
     }

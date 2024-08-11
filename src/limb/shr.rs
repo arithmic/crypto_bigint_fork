@@ -64,7 +64,7 @@ mod tests {
 
     #[test]
     fn shr1() {
-        assert_eq!(Limb(2) >> 1, Limb(1));
+        assert_eq!(2 >> 1, 1);
     }
 
     #[test]
