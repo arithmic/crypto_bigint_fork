@@ -72,9 +72,31 @@ impl<const LIMBS: usize> Uint<LIMBS> {
         &self,
         rhs: &Uint<RHS_LIMBS>,
     ) -> (Self, Uint<RHS_LIMBS>) {
+        let mut i = 0;
         let mut lo = Self::ZERO;
         let mut hi = Uint::<RHS_LIMBS>::ZERO;
-        impl_schoolbook_multiplication!(&self.limbs, &rhs.limbs, lo.limbs, hi.limbs);
+        // impl_schoolbook_multiplication!(&self.limbs, &rhs.limbs, lo.limbs, hi.limbs);
+        // Schoolbook multiplication.
+        // TODO(tarcieri): use Karatsuba for better performance?
+        while i < LIMBS {
+            let mut j = 0;
+            let mut carry = Limb::ZERO;
+            while j < LIMBS {
+                let k = i + j;
+                if k >= LIMBS {
+                    let (n, c) = hi.limbs[k - LIMBS].mac(self.limbs[i], rhs.limbs[j], carry);
+                    hi.limbs[k - LIMBS] = n;
+                    carry = c;
+                } else {
+                    let (n, c) = lo.limbs[k].mac(self.limbs[i], rhs.limbs[j], carry);
+                    lo.limbs[k] = n;
+                    carry = c;
+                }
+                j += 1;
+            }
+            hi.limbs[i + j - LIMBS] = carry;
+            i += 1;
+        }
         (lo, hi)
     }
 
